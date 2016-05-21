@@ -108,8 +108,25 @@ let pack l =
     | x :: (y :: _ as tail) -> if x = y
       then aux (x :: pack) acc tail
       else aux [] ((x :: pack) :: acc) tail in
-    reverse (aux [] [] l)
+    reverse (aux [] [] l);;
 
 let () = assert(
   pack ["a";"a";"a";"a";"b";"c";"c";"a";"a";"d";"d";"e";"e";"e";"e"] =
   [["a"; "a"; "a"; "a"]; ["b"]; ["c"; "c"]; ["a"; "a"]; ["d"; "d"]; ["e"; "e"; "e"; "e"]]
+)
+
+(* 10. Run-length encoding of a list. (easy) *)
+
+let encode l =
+  let rec aux count acc = function
+    | [] -> []
+    | [x] -> (count + 1, x) :: acc
+    | x :: ( y :: z as tail ) -> if x = y
+      then aux (count + 1) acc tail
+      else aux 0 (((count+1), x) :: acc) tail in
+  reverse (aux 0 [] l);;
+
+let () = assert(
+  encode ["a";"a";"a";"a";"b";"c";"c";"a";"a";"d";"e";"e";"e";"e"] =
+  [(4, "a"); (1, "b"); (2, "c"); (2, "a"); (1, "d"); (4, "e")]
+)
